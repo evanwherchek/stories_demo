@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stories_demo/story_arguments.dart';
 import 'package:story_view/story_view.dart';
 
 class ViewStory extends StatefulWidget {
@@ -11,19 +12,22 @@ class ViewStory extends StatefulWidget {
 class _ViewStoryState extends State<ViewStory> {
   final StoryController _storyController = StoryController();
   final List<StoryItem> _storyItems = [];
-  late int _totalItems = 0;
+  late StoryArguments _storyArguments;
+  bool _cycleComplete = false;
 
   void _buildStoryItems() {
-    for (int i = 0; i < _totalItems; i++) {
-      _storyItems
-          .add(StoryItem.text(title: '${i + 1}', backgroundColor: Colors.blueAccent));
+    for (int i = 0;
+        i < (_storyArguments.unreadItems + _storyArguments.readItems); i++) {
+      _storyItems.add(StoryItem.text(
+          title: '${i + 1}', backgroundColor: Colors.blueAccent));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _totalItems = ModalRoute.of(context)!.settings.arguments as int;
-    assert(_totalItems > 0);
+    _storyArguments =
+        ModalRoute.of(context)!.settings.arguments as StoryArguments;
+    assert(_storyArguments.unreadItems > 0);
 
     _buildStoryItems();
 
@@ -33,11 +37,18 @@ class _ViewStoryState extends State<ViewStory> {
             storyItems: _storyItems,
             controller: _storyController,
             repeat: true,
-            onStoryShow: (s) {},
-            onComplete: () {},
+            onStoryShow: (s) {
+              if (!s.shown && !_cycleComplete) {
+                _storyArguments.unreadItems -= 1;
+                _storyArguments.readItems += 1;
+              }
+            },
+            onComplete: () {
+              _cycleComplete = true;
+            },
             onVerticalSwipeComplete: (direction) {
               if (direction == Direction.down) {
-                Navigator.pop(context);
+                Navigator.pop(context, _storyArguments);
               }
             }),
       ),

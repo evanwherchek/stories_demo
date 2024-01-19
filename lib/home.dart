@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:stories_demo/story_arguments.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -12,9 +14,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   final String _imagePath = 'assets/mona-lisa.png';
   final String _username = 'monalisa';
   late AnimationController _controller;
-  final int _totalItems = 5;
-  late int _unreadItems;
-  late int _readItems;
+  late StoryArguments _storyArguments;
 
   @override
   void initState() {
@@ -23,8 +23,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _controller = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
 
-    _unreadItems = _totalItems;
-    _readItems = 0;
+    _storyArguments = StoryArguments(unreadItems: 5, readItems: 0);
   }
 
   @override
@@ -37,12 +36,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               onTap: () {
                 _controller.forward().then((_) {
                   _controller.reverse();
+                });
 
-                  Navigator.pushNamed(context, '/view_story',
-                          arguments: _totalItems)
-                      .then((value) {
-                        
-                      });
+                Navigator.pushNamed(context, '/view_story',
+                        arguments: _storyArguments)
+                    .then((value) {
+                  setState(() {
+                    _storyArguments = value as StoryArguments;
+                  });
                 });
               },
               child: ScaleTransition(
@@ -52,7 +53,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   width: 150.0,
                   height: 150.0,
                   child: CustomPaint(
-                    painter: RingPainter(readSegments: 4, unreadSegments: 5),
+                    painter: RingPainter(
+                        unreadItems: _storyArguments.unreadItems,
+                        readItems: _storyArguments.readItems),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: CircleAvatar(
@@ -99,19 +102,19 @@ class RingPainter extends CustomPainter {
   ], begin: Alignment.topRight, end: Alignment.bottomLeft);
 
   final Gradient gradientRead = const LinearGradient(colors: [
-    Color.fromARGB(38, 138, 58, 185),
-    Color.fromARGB(39, 233, 90, 80),
-    Color.fromARGB(56, 188, 42, 142),
-    Color.fromARGB(39, 205, 72, 107),
-    Color.fromARGB(42, 76, 104, 215)
+    Color(0x282A3AB9),
+    Color(0x28E95A50),
+    Color(0x28BC2A8E),
+    Color(0x28CD486B),
+    Color(0x284C68D7)
   ], begin: Alignment.topRight, end: Alignment.bottomLeft);
 
-  final int readSegments;
-  final int unreadSegments;
+  final int readItems;
+  final int unreadItems;
 
   RingPainter({
-    this.unreadSegments = 1,
-    this.readSegments = 0,
+    this.unreadItems = 1,
+    this.readItems = 0,
   });
 
   @override
@@ -126,13 +129,13 @@ class RingPainter extends CustomPainter {
     final radius = size.width / 2;
     final gapAngle = gapSize / radius;
 
-    int totalSegments = unreadSegments + readSegments;
+    int totalSegments = unreadItems + readItems;
 
     for (int i = 0; i < totalSegments; i++) {
       final startAngle = i * 2 * pi / totalSegments;
       final endAngle = startAngle + 2 * pi / totalSegments - gapAngle;
 
-      if (i >= unreadSegments) {
+      if (i >= unreadItems) {
         paint.shader = gradientRead.createShader(rect);
       }
 
