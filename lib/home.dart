@@ -29,6 +29,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _storyArguments = StoryArguments(unreadItems: 5, readItems: 0);
+          });
+        },
+        child: const Icon(
+          Icons.refresh
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
