@@ -14,10 +14,12 @@ class _ViewStoryState extends State<ViewStory> {
   final List<StoryItem> _storyItems = [];
   late StoryArguments _storyArguments;
   bool _cycleComplete = false;
+  int index = 0;
 
   void _buildStoryItems() {
     for (int i = 0;
-        i < (_storyArguments.unreadItems + _storyArguments.readItems); i++) {
+        i < (_storyArguments.unreadItems + _storyArguments.readItems);
+        i++) {
       _storyItems.add(StoryItem.text(
           title: '${i + 1}', backgroundColor: Colors.blueAccent));
     }
@@ -38,12 +40,15 @@ class _ViewStoryState extends State<ViewStory> {
             controller: _storyController,
             repeat: true,
             onStoryShow: (s) {
-              if (!s.shown && !_cycleComplete) {
+              index++;
+
+              if (!s.shown && !_cycleComplete && (index > _storyArguments.readItems)) {
                 _storyArguments.unreadItems -= 1;
                 _storyArguments.readItems += 1;
               }
             },
             onComplete: () {
+              index = 0;
               _cycleComplete = true;
             },
             onVerticalSwipeComplete: (direction) {
