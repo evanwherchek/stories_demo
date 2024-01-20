@@ -13,6 +13,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   final String _imagePath = 'assets/mona-lisa.png';
   final String _username = 'monalisa';
+  final int _totalItems = 10;
   late AnimationController _controller;
   late StoryArguments _storyArguments;
 
@@ -20,10 +21,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    _controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
 
-    _storyArguments = StoryArguments(unreadItems: 5, readItems: 0);
+    _storyArguments = StoryArguments(unreadItems: _totalItems, readItems: 0);
   }
 
   @override
@@ -31,26 +31,24 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          /// Reset the UI back to all story items being unread.
           setState(() {
-            _storyArguments = StoryArguments(unreadItems: 5, readItems: 0);
+            _storyArguments = StoryArguments(unreadItems: _totalItems, readItems: 0);
           });
         },
-        child: const Icon(
-          Icons.refresh
-        ),
+        child: const Icon(Icons.refresh),
       ),
       body: SafeArea(
         child: Center(
           child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
             GestureDetector(
               onTap: () {
-                _controller.forward().then((_) {
+                _controller.forward().then((value) {
                   _controller.reverse();
                 });
 
-                Navigator.pushNamed(context, '/view_story',
-                        arguments: _storyArguments)
-                    .then((value) {
+                Navigator.pushNamed(context, '/view_story', arguments: _storyArguments).then((value) {
+                  /// When the user comes back from viewing a story, update how many items have been read.
                   setState(() {
                     _storyArguments = value as StoryArguments;
                   });
@@ -101,16 +99,18 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
 class RingPainter extends CustomPainter {
   final double strokeWidth = 5.0;
-  final double gapSize = 25.0;
+  final double gapSize = 15.0;
 
+  /// The color of the ring for unread items.
   final Gradient gradientUnread = const LinearGradient(colors: [
-    Color(0xff8a3ab9),
-    Color(0xffe95950),
-    Color(0xffbc2a8d),
-    Color(0xffcd486b),
-    Color(0xff4c68d7)
+    Color(0xff8A3AB9),
+    Color(0xffE95950),
+    Color(0xffBC2A8D),
+    Color(0xffCD486B),
+    Color(0xff4C68D7)
   ], begin: Alignment.topRight, end: Alignment.bottomLeft);
 
+  /// The color of the ring for read items.
   final Gradient gradientRead = const LinearGradient(colors: [
     Color(0x282A3AB9),
     Color(0x28E95A50),
@@ -141,10 +141,12 @@ class RingPainter extends CustomPainter {
 
     int totalSegments = unreadItems + readItems;
 
+    /// Paint each individual segment int the ring around the profile picture.
     for (int i = 0; i < totalSegments; i++) {
       final startAngle = i * 2 * pi / totalSegments;
       final endAngle = startAngle + 2 * pi / totalSegments - gapAngle;
 
+      /// If all unread items have been accounted for, switch to the color of the read items.
       if (i >= unreadItems) {
         paint.shader = gradientRead.createShader(rect);
       }
