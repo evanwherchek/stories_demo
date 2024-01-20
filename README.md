@@ -14,4 +14,4 @@ This demo is a redesign of Instagram stories inspired by a [video by Juxtaposed 
 <div align="center">
 <img src="https://github.com/evanwherchek/stories_demo/assets/50429973/b222c6a7-559d-46a0-a01b-3b41e5afc459" width="200">
 </div>
-<p align="center">Screenshot of the code in this repository</p>
+<p align="center">Screenshot of the code in this repository running</p>
