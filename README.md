@@ -1,16 +1,3 @@
-# stories_demo
+# Stories Demo
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This demo is a redesign of Instagram stories inspired by a video by Juxtaposed on YouTube about improving the app's UI design. Instead of a single ring around the profile picture of a user indicating their story, the redesign brings a segmented ring that shows how many items are in the user's story(e.g. if there are three story items, the ring is made up of three segments). When a story item is viewed, it's respective segment turns to a faded color to indicate that it has already been viewed.
